@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,6 +32,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('facilities', [FacilityController::class, 'store'])->name('facilities.store');
     Route::put('facilities/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
     Route::delete('facilities/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
+
+    // Reservation Management
+    Route::get('reservations', [ReservationController::class, 'index'])->name('reservations');
+    Route::post('reservations', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::put('reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');
+    Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
 });
 

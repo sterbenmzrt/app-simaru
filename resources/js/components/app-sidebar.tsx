@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, facilities, rooms, users } from '@/routes';
+import { dashboard, facilities, reservations, rooms, users } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -44,7 +44,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Manage Reservations',
-        href: dashboard(),
+        href: reservations(),
         icon: CalendarArrowDown,
     },
 ];

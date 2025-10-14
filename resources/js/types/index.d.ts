@@ -82,3 +82,29 @@ export interface Facility {
     created_at: string;
     updated_at: string;
 }
+
+export enum ReservationStatus {
+    Pending = 'pending',
+    Approved = 'approved',
+    Cancelled = 'cancelled',
+    Rejected = 'rejected',
+}
+
+export interface Reservation {
+    id: number;
+    user_id: number;
+    room_id: number;
+    schedule_id: number;
+    status: ReservationStatus;
+    purpose: string;
+    user: User;
+    room: Room;
+    schedule: Schedule;
+}
+
+export interface Schedule {
+    id: number;
+    start_time: string;
+    end_time: string;
+    is_blocked: boolean;
+}

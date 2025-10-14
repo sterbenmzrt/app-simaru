@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Database\Seeders\RoleSeeder;
 use App\Models\Room;
 use App\Models\Facility;
+use App\Models\Reservation;
 
 class DatabaseSeeder extends Seeder
 {
@@ -75,5 +76,9 @@ class DatabaseSeeder extends Seeder
             $facilities = $allFacilities->random(rand(1, 5));
             $room->facilities()->attach($facilities->pluck('id')->toArray());
         });
+
+        // create reservations
+        Reservation::factory()->count(10)->create();
+
     }
 }
