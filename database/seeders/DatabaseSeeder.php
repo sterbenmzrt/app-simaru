@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Seeders\RoleSeeder;
+use App\Models\Room;
+use App\Models\Facility;
 
 class DatabaseSeeder extends Seeder
 {
@@ -63,5 +65,15 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $approver->assignRole('Approver');
+
+        // Create rooms and facilities with relationships
+        Facility::factory(5)->create();
+        $allFacilities = Facility::all();
+
+        Room::factory(10)->create()->each(function ($room) use ($allFacilities) {
+            // Ambil random 1 sampai 5 fasilitas dari yang sudah ada
+            $facilities = $allFacilities->random(rand(1, 5));
+            $room->facilities()->attach($facilities->pluck('id')->toArray());
+        });
     }
 }

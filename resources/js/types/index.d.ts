@@ -62,3 +62,23 @@ export interface User {
     two_factor_confirmed_at: string | null;
     roles: Role[];
 }
+
+export interface Room {
+    id: number;
+    name: string;
+    code: string;
+    capacity: number;
+    location: string | null;
+    description: string | null;
+    created_at: string;
+    updated_at: string;
+    facilities?: Facility[];
+}
+
+export interface Facility {
+    id: number;
+    name: string;
+    description: string | null;
+    created_at: string;
+    updated_at: string;
+}

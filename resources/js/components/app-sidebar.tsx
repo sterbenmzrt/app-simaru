@@ -9,10 +9,16 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, users } from '@/routes';
+import { dashboard, facilities, rooms, users } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { CalendarArrowDown, LayoutGrid, School, Users } from 'lucide-react';
+import {
+    CalendarArrowDown,
+    Layers,
+    LayoutGrid,
+    School,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -28,8 +34,13 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Manage Rooms',
-        href: dashboard(),
+        href: rooms(),
         icon: School,
+    },
+    {
+        title: 'Manage Facilities',
+        href: facilities(),
+        icon: Layers,
     },
     {
         title: 'Manage Reservations',
