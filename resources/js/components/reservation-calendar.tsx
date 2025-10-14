@@ -158,13 +158,8 @@ export default function ReservationCalendar({
 
             {/* CRUD Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTitle>
-                    Reservation {selectedEvent ? 'Edit' : 'Create'}
-                </DialogTitle>
-                <DialogDescription>
-                    Fill in the form to {selectedEvent ? 'Edit' : 'Create'} a
-                    reservation.
-                </DialogDescription>
+                <DialogTitle></DialogTitle>
+                <DialogDescription></DialogDescription>
                 <DialogContent className="sm:max-w-[500px]">
                     <ReservationForm
                         event={selectedEvent}
