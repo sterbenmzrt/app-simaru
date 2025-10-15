@@ -78,7 +78,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 To run the application in a local development environment, you can use the following command. This will start the PHP server, the Vite development server, and the queue listener concurrently.
 
 ```bash
-composer run dev
+npm run dev
 ```
 
 The application will be available at `http://localhost:8000` (or the address provided by `php artisan serve`).
