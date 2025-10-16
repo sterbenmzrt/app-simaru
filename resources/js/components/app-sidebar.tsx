@@ -78,6 +78,7 @@ export function AppSidebar() {
     const isSuperAdmin = roles.includes('Super_Admin');
 
     const filteredNavItems = mainNavItems.filter((item) => {
+        if (item.title === 'Dashboard' && isSuperAdmin) return false;
         if (item.title === 'Manage Users' && !isSuperAdmin) return false;
         if (item.title === 'Manage Facilities' && !isSuperAdmin) return false;
         if (item.title === 'Manage Rooms' && !isSuperAdmin) return false;
