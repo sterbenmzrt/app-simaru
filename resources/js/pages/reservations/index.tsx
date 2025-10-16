@@ -48,7 +48,10 @@ export default function ReservationPage({
                         <ChartRoom rooms={rooms} />
                     </div>
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <ChartReservation reservations={reservations} />
+                        <ChartReservation
+                            reservations={reservations}
+                            cans={cans}
+                        />
                     </div>
                     <div className="relative flex items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* You can put another chart here later */}

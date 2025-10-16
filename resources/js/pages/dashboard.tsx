@@ -37,17 +37,23 @@ export default function Dashboard({
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative h-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {role === 'Approver' ? (
-                            <ChartReservation reservations={reservations} />
+                            <ChartReservation
+                                reservations={reservations}
+                                cans={cans}
+                            />
                         ) : (
-                            <ChartReservation reservations={userReservations} />
+                            <ChartReservation
+                                reservations={userReservations}
+                                cans={cans}
+                            />
                         )}
                     </div>
-                    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative h-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <ChartRoom rooms={rooms} />
                     </div>
-                    <div className="relative flex items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative flex h-full items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <span className="p-4 text-muted-foreground">
                             Coming Soon
                         </span>

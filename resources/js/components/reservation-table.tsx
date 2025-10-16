@@ -50,7 +50,9 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 import InputError from './input-error';
 
-export const getColumns = (): ColumnDef<Reservation>[] => [
+export const getColumns = (cans: {
+    [key: string]: boolean;
+}): ColumnDef<Reservation>[] => [
     {
         id: 'select',
         header: ({ table }) => (
@@ -159,12 +161,18 @@ export const getColumns = (): ColumnDef<Reservation>[] => [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <EditReservationDialog reservation={reservation} />
+                            {cans.edit_reservation && (
+                                <EditReservationDialog
+                                    reservation={reservation}
+                                />
+                            )}
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <DeleteReservationDialog
-                                reservation={reservation}
-                            />
+                            {cans.delete_reservation && (
+                                <DeleteReservationDialog
+                                    reservation={reservation}
+                                />
+                            )}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -175,8 +183,10 @@ export const getColumns = (): ColumnDef<Reservation>[] => [
 
 export default function ReservationDataTable({
     data,
+    cans,
 }: {
     data?: Reservation[];
+    cans: { [key: string]: boolean };
 }) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
@@ -185,7 +195,8 @@ export default function ReservationDataTable({
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
 
-    const columns = React.useMemo(() => getColumns(), []);
+    // const columns = React.useMemo(() => getColumns(), [cans]);
+    const columns = React.useMemo(() => getColumns(cans ?? []), [cans]);
     const table = useReactTable({
         data: data ?? [],
         columns,
@@ -241,7 +252,7 @@ export default function ReservationDataTable({
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AddReservationDialog />
+                {/* <AddReservationDialog cans={cans} /> */}
             </div>
 
             <div className="overflow-hidden rounded-md border">
@@ -324,91 +335,92 @@ export default function ReservationDataTable({
     );
 }
 
-/* ====================== DIALOGS ====================== */
+// function AddReservationDialog({ cans }: { cans: { [key: string]: boolean } }) {
+//     const {
+//         data,
+//         setData,
+//         post,
+//         processing,
+//         errors,
+//         reset,
+//         recentlySuccessful,
+//     } = useForm({
+//         purpose: '',
+//         room_id: '',
+//         schedule_id: '',
+//         status: 'pending',
+//     });
 
-function AddReservationDialog() {
-    const {
-        data,
-        setData,
-        post,
-        processing,
-        errors,
-        reset,
-        recentlySuccessful,
-    } = useForm({
-        purpose: '',
-        room_id: '',
-        schedule_id: '',
-        status: 'pending',
-    });
+//     const handleSubmit = (e: React.FormEvent) => {
+//         e.preventDefault();
+//         post('/reservations', { onSuccess: () => reset() });
+//     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post('/reservations', { onSuccess: () => reset() });
-    };
+//     return (
+//         <Dialog>
+//             <DialogTrigger asChild>
+//                 {/* Permission Check */}
+//                 {cans.create_reservation && (
+//                     <Button className="ml-4">Add Reservation</Button>
+//                 )}
+//             </DialogTrigger>
+//             <DialogContent className="sm:max-w-[425px]">
+//                 <form onSubmit={handleSubmit}>
+//                     <DialogHeader>
+//                         <DialogTitle>Add Reservation</DialogTitle>
+//                         <DialogDescription>
+//                             Fill in the reservation details and click save.
+//                         </DialogDescription>
+//                     </DialogHeader>
 
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button className="ml-4">Add Reservation</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <form onSubmit={handleSubmit}>
-                    <DialogHeader>
-                        <DialogTitle>Add Reservation</DialogTitle>
-                        <DialogDescription>
-                            Fill in the reservation details and click save.
-                        </DialogDescription>
-                    </DialogHeader>
+//                     <div className="grid gap-4 py-4">
+//                         <div>
+//                             <Label>Purpose</Label>
+//                             <Input
+//                                 value={data.purpose}
+//                                 onChange={(e) =>
+//                                     setData('purpose', e.target.value)
+//                                 }
+//                                 placeholder="Reservation purpose"
+//                             />
+//                             {errors.purpose && (
+//                                 <InputError message={errors.purpose} />
+//                             )}
+//                         </div>
 
-                    <div className="grid gap-4 py-4">
-                        <div>
-                            <Label>Purpose</Label>
-                            <Input
-                                value={data.purpose}
-                                onChange={(e) =>
-                                    setData('purpose', e.target.value)
-                                }
-                                placeholder="Reservation purpose"
-                            />
-                            {errors.purpose && (
-                                <InputError message={errors.purpose} />
-                            )}
-                        </div>
+//                         <div>
+//                             <Label>Status</Label>
+//                             <Input
+//                                 value={data.status}
+//                                 onChange={(e) =>
+//                                     setData('status', e.target.value)
+//                                 }
+//                                 placeholder="pending / approved / cancelled"
+//                             />
+//                             {errors.status && (
+//                                 <InputError message={errors.status} />
+//                             )}
+//                         </div>
+//                     </div>
 
-                        <div>
-                            <Label>Status</Label>
-                            <Input
-                                value={data.status}
-                                onChange={(e) =>
-                                    setData('status', e.target.value)
-                                }
-                                placeholder="pending / approved / cancelled"
-                            />
-                            {errors.status && (
-                                <InputError message={errors.status} />
-                            )}
-                        </div>
-                    </div>
-
-                    <DialogFooter className="mt-4 flex justify-between">
-                        <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <div className="flex items-center gap-4">
-                            <Button type="submit" disabled={processing}>
-                                Save Reservation
-                            </Button>
-                            <Transition show={recentlySuccessful}>
-                                <p className="text-sm text-green-600">Saved.</p>
-                            </Transition>
-                        </div>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
-}
+//                     <DialogFooter className="mt-4 flex justify-between">
+//                         <DialogClose asChild>
+//                             <Button variant="outline">Cancel</Button>
+//                         </DialogClose>
+//                         <div className="flex items-center gap-4">
+//                             <Button type="submit" disabled={processing}>
+//                                 Save Reservation
+//                             </Button>
+//                             <Transition show={recentlySuccessful}>
+//                                 <p className="text-sm text-green-600">Saved.</p>
+//                             </Transition>
+//                         </div>
+//                     </DialogFooter>
+//                 </form>
+//             </DialogContent>
+//         </Dialog>
+//     );
+// }
 
 function EditReservationDialog({ reservation }: { reservation: Reservation }) {
     const {
@@ -432,6 +444,7 @@ function EditReservationDialog({ reservation }: { reservation: Reservation }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
+                {/* Permission Check */}
                 <Button variant="link">Edit Reservation</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

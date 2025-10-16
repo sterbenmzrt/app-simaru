@@ -32,6 +32,12 @@ class DashboardController extends Controller
             'delete_reservation' => $user->can('delete reservations'),
         ];
 
+        if($user->hasRole('Super_Admin')){
+            // Super Admin specific data can be added here
+            return redirect()->route('reservations');
+        }
+
+
         return Inertia::render('dashboard', compact('reservations', 'rooms', 'userReservations', 'cans', 'user'));
     }
 }
