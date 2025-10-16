@@ -53,9 +53,13 @@ type CalendarEvent = {
 export default function ReservationCalendar({
     reservations,
     rooms,
+    cans,
+    role,
 }: {
     reservations: Reservation[];
     rooms: Room[];
+    cans: { [key: string]: boolean };
+    role: string;
 }) {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null,
@@ -80,6 +84,7 @@ export default function ReservationCalendar({
     });
 
     const handleEventClick = (event: CalendarEvent) => {
+        if (!cans.edit_reservation) return;
         setSelectedEvent(event);
         setIsDialogOpen(true);
     };
@@ -96,90 +101,102 @@ export default function ReservationCalendar({
         };
     };
 
-    return (
-        <Calendar
-            key={flash?.success || reservations.length}
-            events={events}
-            onEventClick={handleEventClick}
-        >
-            <div className="flex h-dvh flex-col">
-                {/* Toolbar */}
-                <div className="mb-6 flex items-center gap-2">
-                    <CalendarViewTrigger
-                        view="day"
-                        className="aria-[current=true]:bg-accent"
-                    >
-                        Day
-                    </CalendarViewTrigger>
-                    <CalendarViewTrigger
-                        view="week"
-                        className="aria-[current=true]:bg-accent"
-                    >
-                        Week
-                    </CalendarViewTrigger>
-                    <CalendarViewTrigger
-                        view="month"
-                        className="aria-[current=true]:bg-accent"
-                    >
-                        Month
-                    </CalendarViewTrigger>
-                    <CalendarViewTrigger
-                        view="year"
-                        className="aria-[current=true]:bg-accent"
-                    >
-                        Year
-                    </CalendarViewTrigger>
+    // permission check
+    if (cans.view_reservation) {
+        return (
+            <Calendar
+                key={flash?.success || reservations.length}
+                events={events}
+                onEventClick={handleEventClick}
+            >
+                <div className="flex h-dvh flex-col">
+                    {/* Toolbar */}
+                    <div className="mb-6 flex items-center gap-2">
+                        <CalendarViewTrigger
+                            view="day"
+                            className="aria-[current=true]:bg-accent"
+                        >
+                            Day
+                        </CalendarViewTrigger>
+                        <CalendarViewTrigger
+                            view="week"
+                            className="aria-[current=true]:bg-accent"
+                        >
+                            Week
+                        </CalendarViewTrigger>
+                        <CalendarViewTrigger
+                            view="month"
+                            className="aria-[current=true]:bg-accent"
+                        >
+                            Month
+                        </CalendarViewTrigger>
+                        <CalendarViewTrigger
+                            view="year"
+                            className="aria-[current=true]:bg-accent"
+                        >
+                            Year
+                        </CalendarViewTrigger>
 
-                    <span className="flex-1" />
+                        <span className="flex-1" />
 
-                    <CalendarCurrentDate />
+                        <CalendarCurrentDate />
 
-                    <CalendarPrevTrigger>
-                        <ChevronLeft size={20} />
-                    </CalendarPrevTrigger>
-                    <CalendarTodayTrigger>Today</CalendarTodayTrigger>
-                    <CalendarNextTrigger>
-                        <ChevronRight size={20} />
-                    </CalendarNextTrigger>
+                        <CalendarPrevTrigger>
+                            <ChevronLeft size={20} />
+                        </CalendarPrevTrigger>
+                        <CalendarTodayTrigger>Today</CalendarTodayTrigger>
+                        <CalendarNextTrigger>
+                            <ChevronRight size={20} />
+                        </CalendarNextTrigger>
 
-                    <Button className="ml-2" onClick={handleAddClick}>
-                        Booking
-                    </Button>
+                        {/* Permission Check */}
+                        {cans.create_reservation && (
+                            <Button className="ml-2" onClick={handleAddClick}>
+                                Booking
+                            </Button>
+                        )}
+                    </div>
+
+                    {/* Calendar Views */}
+                    <div className="flex-1 overflow-hidden px-6">
+                        <CalendarDayView />
+                        <CalendarWeekView />
+                        <CalendarMonthView />
+                        <CalendarYearView />
+                    </div>
                 </div>
 
-                {/* Calendar Views */}
-                <div className="flex-1 overflow-hidden px-6">
-                    <CalendarDayView />
-                    <CalendarWeekView />
-                    <CalendarMonthView />
-                    <CalendarYearView />
-                </div>
-            </div>
-
-            {/* CRUD Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTitle></DialogTitle>
-                <DialogDescription></DialogDescription>
-                <DialogContent className="sm:max-w-[500px]">
-                    <ReservationForm
-                        event={selectedEvent}
-                        onClose={() => setIsDialogOpen(false)}
-                        rooms={rooms}
-                    />
-                </DialogContent>
-            </Dialog>
-        </Calendar>
-    );
+                {/* CRUD Dialog */}
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTitle></DialogTitle>
+                    <DialogDescription></DialogDescription>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <ReservationForm
+                            event={selectedEvent}
+                            onClose={() => setIsDialogOpen(false)}
+                            rooms={rooms}
+                            cans={cans}
+                            role={role}
+                        />
+                    </DialogContent>
+                </Dialog>
+            </Calendar>
+        );
+    }
 }
 
 function ReservationForm({
     event,
     onClose,
     rooms,
+    cans,
+    role,
 }: {
     event: CalendarEvent | null;
     onClose: () => void;
     rooms: Room[];
+    cans: { [key: string]: boolean };
+    role: string;
 }) {
     const isEdit = !!event;
     const id = event?.id;
@@ -296,7 +313,6 @@ function ReservationForm({
                     {errors.purpose && <InputError message={errors.purpose} />}
                 </div>
 
-                {/* 👇 Tampilkan hanya saat tambah baru */}
                 {!isEdit && (
                     <>
                         <div>
@@ -348,34 +364,39 @@ function ReservationForm({
                         </div>
                     </>
                 )}
-
-                <div>
-                    <Label>Status</Label>
-                    <select
-                        className="w-full rounded border px-3 py-2"
-                        value={data.status}
-                        onChange={(e) =>
-                            setData(
-                                'status',
-                                e.target.value as
-                                    | 'approved'
-                                    | 'pending'
-                                    | 'cancelled'
-                                    | 'rejected',
-                            )
-                        }
-                    >
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    {errors.status && <InputError message={errors.status} />}
-                </div>
+                {/* Role Check */}
+                {role === 'Approver' && (
+                    <div>
+                        <Label>Status</Label>
+                        <select
+                            className="w-full rounded border px-3 py-2"
+                            value={data.status}
+                            onChange={(e) =>
+                                setData(
+                                    'status',
+                                    e.target.value as
+                                        | 'approved'
+                                        | 'pending'
+                                        | 'cancelled'
+                                        | 'rejected',
+                                )
+                            }
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        {errors.status && (
+                            <InputError message={errors.status} />
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="mt-6 flex justify-between">
-                {isEdit ? (
+                {/* Permission Check */}
+                {cans.delete_reservation && isEdit ? (
                     <Button
                         type="button"
                         variant="destructive"
@@ -392,9 +413,13 @@ function ReservationForm({
                     <Button type="button" variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={processing}>
-                        {isEdit ? 'Update' : 'Create'}
-                    </Button>
+                    {(isEdit
+                        ? cans.edit_reservation
+                        : cans.create_reservation) && (
+                        <Button type="submit" disabled={processing}>
+                            {isEdit ? 'Update' : 'Create'}
+                        </Button>
+                    )}
                     <Transition show={recentlySuccessful}>
                         <p className="text-sm text-green-600">Saved.</p>
                     </Transition>

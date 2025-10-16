@@ -26,13 +26,18 @@ export default function ReservationPage({
     rooms,
     // schedules,
     // users,
+    cans,
+    user,
 }: {
     reservations: Reservation[];
     rooms: Room[];
     schedules: Schedule[];
     users: User[];
+    cans: { [key: string]: boolean };
+    role: string;
+    user: User;
 }) {
-    console.log(reservations);
+    const role = user.roles[0]?.name;
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reservations" />
@@ -59,6 +64,8 @@ export default function ReservationPage({
                     <ReservationCalendar
                         reservations={reservations}
                         rooms={rooms}
+                        cans={cans}
+                        role={role}
                     />
                 </div>
             </div>

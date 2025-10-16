@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Room;
 use App\Models\Schedule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
@@ -27,6 +28,7 @@ class ScheduleFactory extends Factory
         $endTime = $startTime->copy()->addHours($durationHours);
 
         return [
+            'room_id' => Room::inRandomOrder()->first()->id,
             'start_time' => $startTime,
             'end_time' => $endTime,
             'is_blocked' => false,

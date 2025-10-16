@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,9 +13,13 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    // Route::get('dashboard', function () {
+    //     return Inertia::render('dashboard');
+    // })->name('dashboard');
+
+    // Dashboard Management with different roles
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // User Management
     Route::get('users', [UserController::class, 'index'])->name('users');
     Route::post('users', [UserController::class, 'store'])->name('users.store');

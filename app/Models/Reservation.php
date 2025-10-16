@@ -30,4 +30,8 @@ class Reservation extends Model
     {
         return $this->belongsTo(Schedule::class);
     }
+    public function approval()
+    {
+        return $this->hasOne(Approval::class);
+    }
 }
