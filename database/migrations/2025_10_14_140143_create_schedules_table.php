@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('room_id')->constrained()->onDelete('cascade');
             $table->timestamp('start_time');
             $table->timestamp('end_time');
             $table->boolean('is_blocked')->default(false);

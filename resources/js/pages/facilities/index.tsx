@@ -17,8 +17,6 @@ export default function FacilitiesIndex({
 }: {
     facilities: Facility[];
 }) {
-    console.log(facilities);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Facilities" />

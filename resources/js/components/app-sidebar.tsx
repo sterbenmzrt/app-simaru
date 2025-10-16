@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard, facilities, reservations, rooms, users } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     CalendarArrowDown,
     Layers,
@@ -63,6 +63,28 @@ const mainNavItems: NavItem[] = [
 // ];
 
 export function AppSidebar() {
+    const { props } = usePage() as {
+        props: {
+            auth?: {
+                user?: {
+                    roles?: { name: string }[];
+                };
+            };
+        };
+    };
+
+    const user = props.auth?.user ?? {};
+    const roles = user.roles?.map((r) => r.name) ?? [];
+    const isSuperAdmin = roles.includes('Super_Admin');
+
+    const filteredNavItems = mainNavItems.filter((item) => {
+        if (item.title === 'Dashboard' && isSuperAdmin) return false;
+        if (item.title === 'Manage Users' && !isSuperAdmin) return false;
+        if (item.title === 'Manage Facilities' && !isSuperAdmin) return false;
+        if (item.title === 'Manage Rooms' && !isSuperAdmin) return false;
+        if (item.title === 'Manage Reservations' && !isSuperAdmin) return false;
+        return true;
+    });
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -78,7 +100,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

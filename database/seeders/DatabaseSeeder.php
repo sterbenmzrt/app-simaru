@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Seeders\RoleSeeder;
+use Database\Seeders\PermissionSeeder;
 use App\Models\Room;
 use App\Models\Facility;
 use App\Models\Reservation;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call(RoleSeeder::class);
+        $this->call(PermissionSeeder::class);
 
         // User::factory(10)->create();
 

@@ -11,8 +11,19 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
+        'room_id',
         'start_time',
         'end_time',
         'is_blocked',
     ];
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

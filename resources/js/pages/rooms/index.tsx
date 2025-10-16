@@ -21,8 +21,6 @@ export default function Room({
     rooms: Room[];
     facilities: Facility[];
 }) {
-    console.log(rooms);
-    console.log(facilities);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User" />

@@ -26,13 +26,18 @@ export default function ReservationPage({
     rooms,
     // schedules,
     // users,
+    cans,
+    user,
 }: {
     reservations: Reservation[];
     rooms: Room[];
     schedules: Schedule[];
     users: User[];
+    cans: { [key: string]: boolean };
+    role: string;
+    user: User;
 }) {
-    console.log(reservations);
+    const role = user.roles[0]?.name;
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reservations" />
@@ -43,7 +48,10 @@ export default function ReservationPage({
                         <ChartRoom rooms={rooms} />
                     </div>
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <ChartReservation reservations={reservations} />
+                        <ChartReservation
+                            reservations={reservations}
+                            cans={cans}
+                        />
                     </div>
                     <div className="relative flex items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* You can put another chart here later */}
@@ -59,6 +67,8 @@ export default function ReservationPage({
                     <ReservationCalendar
                         reservations={reservations}
                         rooms={rooms}
+                        cans={cans}
+                        role={role}
                     />
                 </div>
             </div>

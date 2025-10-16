@@ -1,8 +1,4 @@
 'use client';
-
-import { TrendingUp } from 'lucide-react';
-import { Label, Pie, PieChart } from 'recharts';
-
 import {
     Card,
     CardContent,
@@ -17,13 +13,26 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/chart';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { TrendingUp } from 'lucide-react';
+import { Label, Pie, PieChart } from 'recharts';
 
 import { Reservation } from '@/types';
+import React from 'react';
+import ReservationDataTable from '../reservation-table';
 
 export function ChartReservation({
     reservations,
+    cans,
 }: {
     reservations: Reservation[];
+    cans: { [key: string]: boolean };
 }) {
     // Hitung jumlah per status
     const statusCount: Record<string, number> = reservations.reduce(
@@ -60,6 +69,8 @@ export function ChartReservation({
     const topStatus = chartData.reduce((prev, curr) => {
         return curr.value > prev.value ? curr : prev;
     }, chartData[0]);
+
+    const [open, setOpen] = React.useState(false);
 
     return (
         <Card className="flex flex-col">
@@ -131,9 +142,28 @@ export function ChartReservation({
                     <TrendingUp className="h-4 w-4" />
                 </div>
                 <div className="text-muted-foreground">
-                    Showing {totalReservations} reservations
+                    Showing {totalReservations} reservations{' '}
+                    <span
+                        onClick={() => setOpen(true)}
+                        className="cursor-pointer text-sm text-muted-foreground underline hover:text-primary"
+                    >
+                        view detail
+                    </span>
                 </div>
             </CardFooter>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-h-[80vh] max-w-[90vw] overflow-auto">
+                    <DialogHeader>
+                        <DialogTitle>Detail Reservasi</DialogTitle>
+                        <DialogDescription>
+                            Daftar lengkap reservasi
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="max-h-[60vh] overflow-auto">
+                        <ReservationDataTable data={reservations} cans={cans} />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 }
