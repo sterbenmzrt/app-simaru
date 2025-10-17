@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Room;
 use App\Models\Schedule;
+use App\Notifications\ApprovalWorkflowNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -125,8 +126,6 @@ class ReservationController extends Controller
         $userRole = Auth::user()->load('roles');
 
         // If the user is an Approver, update or create the Approval entry
-
-
         if($userRole->hasRole('Approver')){
             $approval = Approval::where('reservation_id', $reservation->id)
                 ->first();
@@ -139,12 +138,16 @@ class ReservationController extends Controller
                         'approved_at' => now(),
                         'status' => 'approved',
                     ]);
+                    // Jika disetujui
+                    $reservation->user->notify(new ApprovalWorkflowNotification($reservation->user, 'approved'));
                 } elseif($request->input('status') === 'rejected'){
                     $approval->update([
                         'stages' => 'rejected',
                         'approved_at' => null,
                         'status' => 'rejected',
                     ]);
+                    // Jika ditolak
+                    $reservation->user->notify(new ApprovalWorkflowNotification($reservation->user, 'rejected', $request->input('notes')));
                 }
             }
 
