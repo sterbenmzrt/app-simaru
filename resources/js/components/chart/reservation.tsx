@@ -66,9 +66,11 @@ export function ChartReservation({
     const totalReservations = reservations.length;
 
     // Cari status terbanyak
-    const topStatus = chartData.reduce((prev, curr) => {
-        return curr.value > prev.value ? curr : prev;
-    }, chartData[0]);
+    const topStatus = chartData.length
+        ? chartData.reduce((prev, curr) =>
+              curr.value > prev.value ? curr : prev,
+          )
+        : null;
 
     const [open, setOpen] = React.useState(false);
 
@@ -81,76 +83,95 @@ export function ChartReservation({
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
-                <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
-                >
-                    <PieChart>
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent hideLabel />}
-                        />
-                        <Pie
-                            data={chartData}
-                            dataKey="value"
-                            nameKey="name"
-                            innerRadius={60}
-                            strokeWidth={5}
-                        >
-                            <Label
-                                content={({ viewBox }) => {
-                                    if (
-                                        viewBox &&
-                                        'cx' in viewBox &&
-                                        'cy' in viewBox
-                                    ) {
-                                        return (
-                                            <text
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                            >
-                                                <tspan
+                {chartData.length ? (
+                    <ChartContainer
+                        config={chartConfig}
+                        className="mx-auto aspect-square max-h-[250px]"
+                    >
+                        <PieChart>
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Pie
+                                data={chartData}
+                                dataKey="value"
+                                nameKey="name"
+                                innerRadius={60}
+                                strokeWidth={5}
+                            >
+                                <Label
+                                    content={({ viewBox }) => {
+                                        if (
+                                            viewBox &&
+                                            'cx' in viewBox &&
+                                            'cy' in viewBox
+                                        ) {
+                                            return (
+                                                <text
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
-                                                    className="fill-foreground text-3xl font-bold"
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
                                                 >
-                                                    {totalReservations}
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
-                                                >
-                                                    Total Reservations
-                                                </tspan>
-                                            </text>
-                                        );
-                                    }
-                                }}
-                            />
-                        </Pie>
-                    </PieChart>
-                </ChartContainer>
+                                                    <tspan
+                                                        x={viewBox.cx}
+                                                        y={viewBox.cy}
+                                                        className="fill-foreground text-3xl font-bold"
+                                                    >
+                                                        {totalReservations}
+                                                    </tspan>
+                                                    <tspan
+                                                        x={viewBox.cx}
+                                                        y={
+                                                            (viewBox.cy || 0) +
+                                                            24
+                                                        }
+                                                        className="fill-muted-foreground"
+                                                    >
+                                                        Total Reservations
+                                                    </tspan>
+                                                </text>
+                                            );
+                                        }
+                                    }}
+                                />
+                            </Pie>
+                        </PieChart>
+                    </ChartContainer>
+                ) : (
+                    <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+                        No reservation data available
+                    </div>
+                )}
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium">
-                    Most common status:{' '}
-                    <span className="font-semibold">{topStatus.name}</span> (
-                    {topStatus.value} reservations)
-                    <TrendingUp className="h-4 w-4" />
-                </div>
+                {topStatus ? (
+                    <div className="flex items-center gap-2 font-medium">
+                        Most common status:{' '}
+                        <span className="font-semibold">{topStatus.name}</span>{' '}
+                        ({topStatus.value} reservations)
+                        <TrendingUp className="h-4 w-4" />
+                    </div>
+                ) : (
+                    <div className="text-muted-foreground">
+                        No reservation status found.
+                    </div>
+                )}
+
                 <div className="text-muted-foreground">
                     Showing {totalReservations} reservations{' '}
-                    <span
-                        onClick={() => setOpen(true)}
-                        className="cursor-pointer text-sm text-muted-foreground underline hover:text-primary"
-                    >
-                        view detail
-                    </span>
+                    {totalReservations > 0 && (
+                        <span
+                            onClick={() => setOpen(true)}
+                            className="cursor-pointer text-sm text-muted-foreground underline hover:text-primary"
+                        >
+                            view detail
+                        </span>
+                    )}
                 </div>
             </CardFooter>
+
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-h-[80vh] max-w-[90vw] overflow-auto">
                     <DialogHeader>

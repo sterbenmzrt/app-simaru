@@ -10,6 +10,7 @@ import { register } from '@/routes';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
+import { useRef } from 'react';
 
 interface LoginProps {
     status?: string;
@@ -17,6 +18,15 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
+    // For Demo Only
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+
+    const isiForm = (email: string, password: string) => {
+        if (emailRef.current) emailRef.current.value = email;
+        if (passwordRef.current) passwordRef.current.value = password;
+    };
+    // --- End For Demo Only
     return (
         <AuthLayout
             title="Log in to your account"
@@ -43,6 +53,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    ref={emailRef}
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -68,6 +79,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    ref={passwordRef}
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -100,6 +112,37 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             <TextLink href={register()} tabIndex={5}>
                                 Sign up
                             </TextLink>
+                        </div>
+
+                        {/* For Demo Only */}
+                        <div className="mb-6 grid grid-cols-2 gap-4">
+                            <Button
+                                type="button"
+                                onClick={() =>
+                                    isiForm(
+                                        'superadmin@example.com',
+                                        'password',
+                                    )
+                                }
+                            >
+                                Demo Admin
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={() =>
+                                    isiForm('requestor@example.com', 'password')
+                                }
+                            >
+                                Demo Requestor
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={() =>
+                                    isiForm('approver@example.com', 'password')
+                                }
+                            >
+                                Demo Approver
+                            </Button>
                         </div>
                     </>
                 )}

@@ -25,7 +25,8 @@ class ReservationFactory extends Factory
             'user_id' => 1,
             'room_id' => 1,
             'schedule_id' => Schedule::factory(),
-            'status' => $this->faker->randomElement(['pending', 'approved', 'rejected', 'cancelled']),
+            // 'status' => $this->faker->randomElement(['pending', 'approved', 'rejected', 'cancelled']),
+            'status' => 'pending',
             'purpose' => $this->faker->sentence(),
         ];
     }

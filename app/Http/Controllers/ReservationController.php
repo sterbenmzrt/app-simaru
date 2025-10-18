@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Approval;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Room;
@@ -90,7 +91,19 @@ class ReservationController extends Controller
             'purpose' => 'nullable|string',
         ]);
 
-        Reservation::create(array_merge($validate, ['schedule_id' => $scheduleId, 'user_id' => $userId]));
+        $reservation = Reservation::create(array_merge($validate, ['schedule_id' => $scheduleId, 'user_id' => $userId]));
+
+        // Create Approval entry if the user is a Requestor
+        if($userRole->hasRole('Requestor')){
+            Approval::create([
+                'reservation_id' => $reservation->id,
+                'user_id' => $userId,
+                'stages' => "REQUESTED",
+                'notes' => $reservation->purpose,
+                'status' => 'pending',
+                'approved_at' => null,
+            ]);
+        }
 
         if($userRole->hasRole('Requestor')){
             return redirect()->route('dashboard')->with('success', 'Reservation created successfully.');
@@ -111,7 +124,30 @@ class ReservationController extends Controller
 
         $userRole = Auth::user()->load('roles');
 
+        // If the user is an Approver, update or create the Approval entry
+
+
         if($userRole->hasRole('Approver')){
+            $approval = Approval::where('reservation_id', $reservation->id)
+                ->first();
+
+            if($approval){
+                // if status is approved, set approved_at date
+                if($request->input('status') === 'approved'){
+                    $approval->update([
+                        'stages' => 'approved',
+                        'approved_at' => now(),
+                        'status' => 'approved',
+                    ]);
+                } elseif($request->input('status') === 'rejected'){
+                    $approval->update([
+                        'stages' => 'rejected',
+                        'approved_at' => null,
+                        'status' => 'rejected',
+                    ]);
+                }
+            }
+
             return redirect()->route('dashboard')->with('success', 'Reservation updated successfully.');
         }
 
